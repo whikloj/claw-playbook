@@ -1,0 +1,24 @@
+sudo: required
+
+services:
+  - docker
+  
+env:
+  - distribution: centos
+    version: 7
+    islandora_distro: centos/7
+    user: vagrant
+    init: /usr/lib/systemd/systemd
+  - distribution: ubuntu
+    version: xenial
+    islandora_distro: ubuntu/xenial64
+    user: ubuntu
+    init: /lib/systemd/systemd
+    
+before_install:
+  - sudo docker pull ${distribution}:${version}
+  - sudo docker run --detach --volume="${TRAVIS_BUILD_DIR}" --name "${TRAVIS_BUILD_ID}" ${distribution}:${version} ${init}
+  - sudo docker ps -a
+  - sudo docker exec "$(cat ${TRAVIS_BUILD_ID})" env ANSIBLE_FORCE_COLOR=1 ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml'
+  - sudo docker exec "$(cat ${TRAVIS_BUILD_ID})" env ANSIBLE_FORCE_COLOR=1 ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v playbook.yml'  
+  
