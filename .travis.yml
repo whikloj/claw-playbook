@@ -17,7 +17,10 @@ env:
     
 before_install:
   - sudo docker pull ${distribution}:${version}
-  - sudo docker run --detach --volume="${TRAVIS_BUILD_DIR}" --name "${TRAVIS_BUILD_ID}" ${distribution}:${version} ${init}
+  - sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
+
+script:  
+  - sudo docker run --detach --volume="${TRAVIS_BUILD_DIR}" --name "${TRAVIS_BUILD_ID}" ${distribution}-${version}:ansible ${init}
   - sudo docker ps -a
   - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml
   - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v playbook.yml
