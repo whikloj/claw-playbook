@@ -17,7 +17,7 @@ env:
     
 before_install:
   - sudo docker pull ${distribution}:${version}
-  - sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
+  - sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis
 
 script:  
   - sudo docker run --detach --volume="${TRAVIS_BUILD_DIR}" --name "${TRAVIS_BUILD_ID}" ${distribution}-${version}:ansible ${init}
