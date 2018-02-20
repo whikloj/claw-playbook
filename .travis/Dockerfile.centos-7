@@ -1,8 +1,8 @@
 FROM centos:7
 ENV container docker
 # Install systemd -- See https://hub.docker.com/_/centos/
-RUN yum -y install systemd systemd-libs
-RUN yum -y update; \
+RUN yum -y update; yum clean all
+RUN yum -y install systemd systemd-libs; yum clean all; \
 (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
 rm -f /lib/systemd/system/multi-user.target.wants/*; \
 rm -f /etc/systemd/system/*.wants/*; \
@@ -18,8 +18,6 @@ RUN yum -y install git ansible sudo
 
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
-RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
-
 RUN adduser vagrant
 
 RUN mkdir /tmp/islandora-ansible
@@ -30,9 +28,9 @@ COPY .travis/hosts /tmp/islandora-ansible/inventory/vagrant/hosts
 
 ENV ANSIBLE_ROLES_PATH "/tmp/islandora-ansible/roles:/tmp/islandora-ansible/roles/external:/tmp/islandora-ansible/roles/internal"
 
-WORKDIR /tmp/islandora-ansible
+WORKDIR "/tmp/islandora-ansible"
 
-VOLUME ["/sys/fs/cgroup"]
+VOLUME ["/sys/fs/cgroup:/sys/fs/cgroup:ro"]
 
 CMD ["/usr/sbin/init"]
 

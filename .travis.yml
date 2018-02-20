@@ -1,7 +1,7 @@
 sudo: required
 
 services:
-  - docker
+  - python
   
 env:
   - distribution: centos
@@ -16,9 +16,9 @@ env:
 before_install:
   - sudo docker pull ${distribution}:${version}
   - sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible ${TRAVIS_BUILD_DIR}
+  - sudo docker run --detach --privileged --tty --name="${TRAVIS_BUILD_ID}" ${distribution}-${version}:ansible
 
 script:  
-  - sudo docker run --detach --tty --name="${TRAVIS_BUILD_ID}" ${distribution}-${version}:ansible
   - sudo docker ps -a
   - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} ansible-galaxy -r requirements.yml --roles-path=roles/external install
   - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml
