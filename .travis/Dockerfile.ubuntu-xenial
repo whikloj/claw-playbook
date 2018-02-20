@@ -9,4 +9,16 @@ RUN apt-add-repository -y ppa:ansible/ansible && apt-get update && apt-get insta
 
 RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
 
+RUN useradd ubuntu
+
+RUN mkdir /tmp/islandora-ansible
+
+COPY . /tmp/islandora-ansible
+
+COPY .travis/hosts /tmp/islandora-ansible/inventory/vagrant/hosts
+
+ENV ANSIBLE_ROLES_PATH "/tmp/islandora-ansible/roles:/tmp/islandora-ansible/roles/external:/tmp/islandora-ansible/roles/internal"
+
+WORKDIR /tmp/islandora-ansible
+
 ENTRYPOINT ["/sbin/init"]
