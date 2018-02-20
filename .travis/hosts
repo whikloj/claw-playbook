@@ -1,0 +1,21 @@
+# For use in Docker
+
+default ansible_connection=local
+
+[karaf]
+default
+
+[database]
+default
+
+[webserver]
+default
+
+[tomcat]
+default
+
+[solr]
+default
+
+[crayfish]
+default
