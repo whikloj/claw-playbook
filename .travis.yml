@@ -22,8 +22,7 @@ before_install:
   - sudo docker run --detach --tty --name="${TRAVIS_BUILD_ID}" --security-opt seccomp=unconfined --tmpfs=/run --tmpfs=/run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${owner}/${distribution}:${version}
 
 before_script:
-  - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} yum -y install epel-release policycoreutils selinux-policy-targeted git ansible
-  - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} adduser vagrant; mkdir /tmp/islandora-ansible
+  - .travis/setup.${distribution}-${version}
   - sudo docker cp . ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible
   - sudo docker cp .travis/hosts ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible/inventory/vagrant/hosts
 
