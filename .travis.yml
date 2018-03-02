@@ -4,12 +4,12 @@ services:
   - python
   
 env:
-  - distribution: centos
+  - distribution: solita/centos-systemd-ssh
     version: 7
     islandora_distro: centos/7
     user: vagrant
-  - distribution: ubuntu
-    version: xenial
+  - distribution: solita/ubuntu-systemd-ssh
+    version: 16.04
     islandora_distro: ubuntu/xenial64
     user: ubuntu
     
