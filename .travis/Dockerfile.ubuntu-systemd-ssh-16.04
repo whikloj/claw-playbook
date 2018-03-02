@@ -1,0 +1,38 @@
+FROM ubuntu:xenial
+ENV container docker
+
+RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y software-properties-common && rm -rf /var/lib/apt/lists/*
+
+RUN find /etc/systemd/system \
+         /lib/systemd/system \
+         -path '*.wants/*' \
+         -not -name '*journald*' \
+         -not -name '*systemd-tmpfiles*' \
+         -not -name '*systemd-user-sessions*' \
+         -exec rm \{} \;
+
+RUN apt-get update; apt-get -y install python openssh-server openssh-client; apt-get clean
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN systemctl set-default multi-user.target
+
+RUN apt-add-repository -y ppa:ansible/ansible && apt-get update && apt-get install -y \
+    git \
+    ansible \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN useradd ubuntu
+
+RUN mkdir /tmp/islandora-ansible
+
+COPY . /tmp/islandora-ansible
+
+COPY .travis/hosts /tmp/islandora-ansible/inventory/vagrant/hosts
+
+ENV ANSIBLE_ROLES_PATH "/tmp/islandora-ansible/roles:/tmp/islandora-ansible/roles/external:/tmp/islandora-ansible/roles/internal"
+
+WORKDIR /tmp/islandora-ansible
+
+VOLUME ["sys/fs/cgroup"]
+
+CMD ["/sbin/init"]

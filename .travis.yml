@@ -4,17 +4,19 @@ services:
   - python
   
 env:
-  - distribution: solita/centos-systemd-ssh
+  - owner: solita
+    distribution: centos-systemd-ssh
     version: 7
     islandora_distro: centos/7
     user: vagrant
-  - distribution: solita/ubuntu-systemd-ssh
+  - owner: solita
+    distribution: ubuntu-systemd-ssh
     version: 16.04
     islandora_distro: ubuntu/xenial64
     user: ubuntu
     
 before_install:
-  - sudo docker pull ${distribution}:${version}
+  - sudo docker pull ${owner}/${distribution}:${version}
   - sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible ${TRAVIS_BUILD_DIR}
   - sudo docker run --detach --privileged --tty --name="${TRAVIS_BUILD_ID}" ${distribution}-${version}:ansible
 
