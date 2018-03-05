@@ -1,0 +1,5 @@
+#!/bin/sh
+
+docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} yum -y install epel-release policycoreutils selinux-policy-targeted
+docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} yum -y install which git ansible
+docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} adduser --system vagrant; mkdir /tmp/islandora-ansible

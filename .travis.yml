@@ -5,30 +5,31 @@ services:
   
 env:
   - owner: solita
-    distribution: centos-systemd-ssh
+    distribution: centos-systemd
     version: 7
     islandora_distro: centos/7
     user: vagrant
   - owner: solita
-    distribution: ubuntu-systemd-ssh
+    distribution: ubuntu-systemd
     version: 16.04
     islandora_distro: ubuntu/xenial64
     user: ubuntu
     
 before_install:
-  - sudo docker run --rm --privileged -v /:/host solita/ubuntu-systemd setup
-  - sudo docker pull ${owner}/${distribution}:${version}
+  - docker run --rm --privileged -v /:/host solita/ubuntu-systemd setup
+  - docker pull ${owner}/${distribution}:${version}
   #- sudo docker build --no-cache --rm --file=.travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible ${TRAVIS_BUILD_DIR}
-  - sudo docker run --detach --tty --name="${TRAVIS_BUILD_ID}" --security-opt seccomp=unconfined --tmpfs=/run --tmpfs=/run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${owner}/${distribution}:${version}
+  - docker run --detach --tty --name="${TRAVIS_BUILD_ID}" --security-opt seccomp=unconfined --tmpfs=/run --tmpfs=/run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${owner}/${distribution}:${version}
 
 before_script:
   - .travis/setup.${distribution}-${version}
-  - sudo docker cp . ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible
-  - sudo docker cp .travis/hosts ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible/inventory/vagrant/hosts
+  - docker cp . ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible
+  - docker cp .travis/hosts ${TRAVIS_BUILD_ID}:/tmp/islandora-ansible/inventory/vagrant/hosts
 
 script:  
-  - sudo docker ps -a
-  - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; /usr/bin/env ansible-galaxy -r requirements.yml --roles-path=roles/external install
-  - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; /usr/bin/env ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml
-  - sudo docker exec --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; /usr/bin/env ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v playbook.yml
+  - docker ps -a
+  - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} which ansible-galaxy
+  - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; ansible-galaxy -r requirements.yml --roles-path=roles/external install
+  - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml
+  - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v playbook.yml
   
