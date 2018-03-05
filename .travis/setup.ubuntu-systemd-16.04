@@ -1,3 +1,4 @@
+docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} apt-get update
 docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} apt-get install -y software-properties-common python-software-properties
 docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} apt-add-repository -y ppa:ansible/ansible && apt-get update && apt-get install -y git ansible 
 docker exec --env ANSIBLE_FORCE_COLOR=1 --privileged ${TRAVIS_BUILD_ID} adduser --system ubuntu; mkdir /tmp/islandora-ansible
