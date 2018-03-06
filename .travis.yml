@@ -30,7 +30,7 @@ script:
   - docker ps -a
   - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} which ansible-galaxy
   - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} which ansible-playbook
-  - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; /usr/bin/ansible-galaxy -r requirements.yml --roles-path=roles/external install
+  - docker exec --tty --workdir /tmp/islandora-ansible --detach --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} /usr/bin/ansible-galaxy -r requirements.yml --roles-path=roles/external install
   - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v --syntax-check playbook.yml
   - docker exec --tty --env ANSIBLE_FORCE_COLOR=1 ${TRAVIS_BUILD_ID} cd /tmp/islandora-ansible; ansible-playbook -i inventory/vagrant -u ${user} -e islandora_distro=\"${islandora_distro}\" -v playbook.yml
   
